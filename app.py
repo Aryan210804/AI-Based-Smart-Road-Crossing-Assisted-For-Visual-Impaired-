@@ -13,10 +13,16 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-this'
-app.config['SECURITY_PASSWORD_SALT'] = 'my_precious_two'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this')
+app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT', 'my_precious_two')
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+# Use /tmp for SQLite on Vercel (read-only filesystem)
+if os.environ.get('VERCEL'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/database.db'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Email Configuration
@@ -111,14 +117,14 @@ with app.app_context():
 
 # Camera is opened lazily and re-opened when needed so app starts even without a camera
 camera = None
-# When VIDEO_SOURCE env var is set to 'sample', generate an animated test stream (no physical camera needed)
-# Default to camera 0 (real camera) instead of sample mode
-src_env = os.getenv('VIDEO_SOURCE', '0')
+# Default to 'sample' if in cloud environment (no webcam available)
+default_source = 'sample' if os.environ.get('VERCEL') or os.environ.get('RENDER') else '0'
+src_env = os.getenv('VIDEO_SOURCE', default_source)
 sample_mode = isinstance(src_env, str) and src_env.strip().lower() == 'sample'
 if sample_mode:
     print("Using synthetic sample video stream (no camera required)")
 else:
-    print("Using real camera (default camera 0)")
+    print(f"Using video source: {src_env}")
 detecting = True
 
 # Global stats tracking
@@ -736,5 +742,9 @@ def script():
 
 # ========================= RUN ========================= #
 
+# Export for Gunicorn/Vercel
+app = app
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port, debug=False)
