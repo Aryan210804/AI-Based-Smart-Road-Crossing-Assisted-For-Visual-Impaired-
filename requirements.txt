@@ -1,0 +1,12 @@
+Flask==3.0.0
+opencv-python-headless
+numpy==1.24.3
+ultralytics==8.0.196
+torch
+torchvision
+Flask-SQLAlchemy
+Flask-Login
+Flask-Mail
+Authlib
+requests
+gunicorn

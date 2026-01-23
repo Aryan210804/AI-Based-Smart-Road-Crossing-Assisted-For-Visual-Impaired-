@@ -1,3 +1,11 @@
+import os
+
+# Configure YOLO/Ultralytics to use /tmp for its config/logs (Vercel fix)
+if os.environ.get('VERCEL'):
+    os.environ['ULTRALYTICS_CONFIG_DIR'] = '/tmp/.ultralytics'
+    os.environ['ULTRALYTICS_RUNS_DIR'] = '/tmp/.ultralytics/runs'
+    os.environ['YOLO_VERBOSE'] = 'False'
+
 from flask import Flask, render_template, Response, jsonify, send_from_directory, request, redirect, url_for, flash, session
 import cv2
 import numpy as np
@@ -107,12 +115,15 @@ def load_user(user_id):
 
 # Initialize DB
 with app.app_context():
-    db.create_all()
-    # Create default admin if not exists
-    if not User.query.filter_by(username='admin').first():
-        admin = User(username='admin', email='admin@example.com', password=generate_password_hash('admin123'), is_admin=True)
-        db.session.add(admin)
-        db.session.commit()
+    try:
+        db.create_all()
+        # Create default admin if not exists
+        if not User.query.filter_by(username='admin').first():
+            admin = User(username='admin', email='admin@example.com', password=generate_password_hash('admin123'), is_admin=True)
+            db.session.add(admin)
+            db.session.commit()
+    except Exception as e:
+        print(f"Database initialization error: {e}")
 
 
 # Camera is opened lazily and re-opened when needed so app starts even without a camera
