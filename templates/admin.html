@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Tech Vision</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --glass-card: rgba(15, 15, 25, 0.7);
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --table-row-hover: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1a1a2e, #050508);
+            color: #e2e8f0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .admin-main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: var(--glass-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .admin-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .modern-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+        }
+
+        .modern-card:hover {
+            border-color: rgba(0, 243, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 243, 255, 0.05);
+        }
+
+        .modern-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            color: var(--neon-blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Modern Form Styling */
+        .add-member-form {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .modern-input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .modern-input-group input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .modern-input-group input:focus {
+            border-color: var(--neon-blue);
+            background: rgba(0, 0, 0, 0.5);
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+
+        /* Modern Table */
+        .tech-table-wrapper {
+            overflow-x: auto;
+            border-radius: 15px;
+        }
+
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .tech-table th {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neon-blue);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tech-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.95rem;
+        }
+
+        .tech-table tr:hover {
+            background: var(--table-row-hover);
+        }
+
+        .badge-admin {
+            background: rgba(0, 255, 104, 0.1);
+            color: #00ff68;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 255, 104, 0.3);
+        }
+
+        .delete-icon {
+            color: #ff4444;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .delete-icon:hover {
+            color: #ff0000;
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 5px #ff0000);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 255, 104, 0.1);
+            color: #00ff68;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 255, 104, 0.2);
+        }
+
+        .status-dot-pulse {
+            width: 8px;
+            height: 8px;
+            background: #00ff68;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff68;
+            animation: pulse-green 1.5s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+        }
+
+        .neon-btn {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .neon-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 243, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        @media (max-width: 1024px) {
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-main {
+                padding: 1rem;
+            }
+
+            .modern-card {
+                padding: 1.5rem;
+            }
+
+            .modern-input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-table th,
+            .tech-table td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-microchip logo-icon" style="color: var(--neon-blue);"></i>
+                <h1 style="font-family: 'Orbitron'; font-size: 1.5rem;">Core Admin System</h1>
+            </div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul id="nav-ul">
+                <li><a href="{{ url_for('index') }}" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{{ url_for('logout') }}" class="nav-link" style="color: #ff4444;"><i
+                            class="fas fa-power-off"></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages" style="margin-bottom: 2rem;">
+            {% for category, message in messages %}
+            <div class="flash-alert flash-{{ category }}" style="
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                background: {% if category == 'success' %}rgba(0, 255, 104, 0.1){% elif category == 'danger' %}rgba(255, 0, 85, 0.1){% else %}rgba(0, 243, 255, 0.1){% endif %};
+                color: {% if category == 'success' %}#00ff68{% elif category == 'danger' %}#ff0055{% else %}#00f3ff{% endif %};
+                border: 1px solid {% if category == 'success' %}rgba(0, 255, 104, 0.3){% elif category == 'danger' %}rgba(255, 0, 85, 0.3){% else %}rgba(0, 243, 255, 0.3){% endif %};
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideIn 0.3s ease;
+            ">
+                <i
+                    class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="admin-header">
+            <h1>System Overview <small style="color: var(--text-muted); font-family: 'Outfit';">(Logged in as
+                    Admin)</small></h1>
+            <div class="status-pill">
+                <div class="status-dot-pulse"></div>
+                LIVE STATUS: ACTIVE
+            </div>
+        </div>
+
+        <div class="admin-grid">
+            <!-- User Management -->
+            <div class="modern-card">
+                <h3><i class="fas fa-users-cog"></i> Registered Entities ({{ users|length }})</h3>
+                <div class="tech-table-wrapper">
+                    <table class="tech-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Subject ID</th>
+                                <th>Direct Access Email</th>
+                                <th>Auth Clearance</th>
+                                <th>Gateway</th>
+                                <th>Protocol</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td style="color: var(--neon-blue); font-weight: 700;">#{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.is_admin %}
+                                    <span class="badge-admin">ADMIN_ROOT</span>
+                                    {% else %}
+                                    <span style="opacity: 0.6;">STD_USER</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-transform: uppercase; font-size: 0.8rem; font-weight: 600;">{{
+                                    user.oauth_provider or 'Native (Email)' }}</td>
+                                <td>
+                                    {% if user.id != current_user.id and user.email.lower() not in
+                                    ['aryankumar735588@gmail.com', 'aryankumar735588@gmial.com'] %}
+                                    <a href="{{ url_for('delete_user', id=user.id) }}" class="delete-icon"
+                                        onclick="return confirm('Terminate this user record? This action cannot be undone.')">
+                                        <i class="fas fa-user-times"></i>
+                                    </a>
+                                    {% else %}
+                                    <i class="fas fa-shield-alt" style="color: var(--neon-blue); opacity: 0.5;"
+                                        title="System Protected"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Team Management -->
+            <div class="modern-card" id="manage-team">
+                <h3><i class="fas fa-user-ninja"></i> Personnel Management</h3>
+
+                <div class="add-member-form">
+                    <p style="margin-bottom: 1.5rem; color: var(--neon-blue); font-weight: 600; font-size: 0.9rem;">
+                        ENROLL NEW TEAM MEMBER</p>
+                    <form action="{{ url_for('add_team_member') }}" method="POST">
+                        <div class="modern-input-group">
+                            <input type="text" name="name" placeholder="Full Name" required>
+                            <input type="text" name="role" placeholder="Designated Role" required>
+                            <input type="text" name="image_url" placeholder="Avatar Link (External)">
+                            <button type="submit" class="neon-btn">Execute Add</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="tech-table-wrapper">
+                    <table class="tech-table">
+                        <thead>
+                            <tr>
+                                <th>Visual ID</th>
+                                <th>Registry Name</th>
+                                <th>Specialization</th>
+                                <th>Protocol</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in team_members %}
+                            <tr>
+                                <td>
+                                    <img src="{{ member.image_url }}" alt="AV"
+                                        style="width: 45px; height: 45px; border-radius: 12px; border: 2px solid rgba(0, 243, 255, 0.2); object-fit: cover;">
+                                </td>
+                                <td style="font-weight: 700;">{{ member.name }}</td>
+                                <td style="color: var(--neon-purple);">{{ member.role }}</td>
+                                <td>
+                                    <a href="{{ url_for('delete_team_member', id=member.id) }}" class="delete-icon"
+                                        onclick="return confirm('Terminate this personnel record?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 3rem; color: #888;">
+                                    <i class="fas fa-folder-open"
+                                        style="font-size: 2rem; display: block; margin-bottom: 1rem; opacity: 0.3;"></i>
+                                    NO PERSONNEL RECORDS FOUND
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- User Feedback -->
+            <div class="modern-card">
+                <h3><i class="fas fa-comment-dots"></i> Uplink Feedback System</h3>
+                <div class="tech-table-wrapper">
+                    <table class="tech-table">
+                        <thead>
+                            <tr>
+                                <th>Origin User</th>
+                                <th>Data Transmission</th>
+                                <th>Sync Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fb in feedbacks %}
+                            <tr>
+                                <td style="font-weight: 600;">{{ fb.user.username }}</td>
+                                <td style="max-width: 400px; line-height: 1.4; opacity: 0.9;">{{ fb.message }}</td>
+                                <td style="font-family: 'monospace'; font-size: 0.85rem; color: #888;">{{
+                                    fb.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 4rem; color: #888;">
+                                    NO RECENT TRANSMISSIONS RECEIVED
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Auto-scroll to team section if redirected after adding
+        if (window.location.hash === '#manage-team') {
+            document.getElementById('manage-team').scrollIntoView();
+        }
+
+        // Hamburger Menu Toggle
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navUl = document.getElementById('nav-ul');
+
+        mobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            navUl.classList.toggle('active');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+Flask==3.0.0
+opencv-python==4.8.1.78
+numpy==1.24.3
+ultralytics==8.0.196
+torch>=2.0.0
+torchvision>=0.15.0
+Flask-SQLAlchemy
+Flask-Login
+Flask-Mail
+Authlib
+requests

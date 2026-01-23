@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Detection App</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">📹</span>
+                <h1>Camera Detection</h1>
+            </div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul id="nav-ul">
+                <li><a href="/dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-section="team">Team</a></li>
+                <li><a href="/about" class="nav-link" data-section="about">About</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="#" class="nav-link" data-section="feedback">Feedback</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                {% if current_user.is_admin %}
+                <li><a href="{{ url_for('admin') }}" style="color:red; font-weight:bold;">Admin Panel</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                {% else %}
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section id="dashboard" class="section active">
+            <div class="section-header">
+                <h2>Live System Monitoring</h2>
+                <div class="status-indicator">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="status-text">Active</span>
+                </div>
+            </div>
+
+            <!-- System Stats Section (NOW AT TOP) -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="face-count">0</div>
+                        <div class="stat-label">Faces</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚶</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="human-count">0</div>
+                        <div class="stat-label">Humans</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚗</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="vehicle-count">0</div>
+                        <div class="stat-label">Vehicles</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚦</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="traffic-light-count">0</div>
+                        <div class="stat-label">Traffic Lights</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🐕</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="dog-count">0</div>
+                        <div class="stat-label">Dogs</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🦓</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="zebra-crossing-count">0</div>
+                        <div class="stat-label">Zebra Crossings</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🐄</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="cow-count">0</div>
+                        <div class="stat-label">Cows</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🐈</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="cat-count">0</div>
+                        <div class="stat-label">Cats</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🐃</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="buffalo-count">0</div>
+                        <div class="stat-label">Buffaloes</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚜</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="bullock-cart-count">0</div>
+                        <div class="stat-label">Bullock Carts</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="fps-value">0</div>
+                        <div class="stat-label">FPS</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel" style="margin-bottom: 20px;">
+                <button id="toggle-btn" class="btn btn-primary">
+                    <span class="btn-icon">🔍</span>
+                    <span class="btn-text">Disable Detection</span>
+                </button>
+                <button id="fullscreen-btn" class="btn btn-secondary">
+                    <span class="btn-icon">⛶</span>
+                    <span class="btn-text">Fullscreen</span>
+                </button>
+            </div>
+
+            <div class="video-wrapper">
+                <div class="video-container">
+                    <div class="video-overlay" id="video-overlay">
+                        <div class="loading-spinner"></div>
+                        <p>Loading camera feed...</p>
+                    </div>
+                    <img src="/video" alt="Video Stream" id="video-stream" onload="hideLoading()" onerror="showError()">
+                    <!-- Crazy Radar Overlay -->
+                    <div class="radar-scan-overlay"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="team" class="section">
+            <div class="section-header" style="border-left: 5px solid var(--success-neon);">
+                <h2>Meet Our Team</h2>
+            </div>
+
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">Smart Road Crossing – Project
+                Contributors</p>
+
+            <div class="team-grid">
+                <!-- Member 1 -->
+                <div class="team-card tilt-card" data-tilt>
+                    <div
+                        style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary-neon); margin: 0 auto 15px; overflow: hidden;">
+                        <img src="https://ui-avatars.com/api/?name=Vitali+Devraj&background=random&size=100"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <h3>Vitali Devraj Sivanand</h3>
+                    <p
+                        style="color: var(--primary-neon); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">
+                        Backend Lead</p>
+                    <p>Flask server, camera integration and detection control logic.</p>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="team-card tilt-card" data-tilt>
+                    <div
+                        style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary-neon); margin: 0 auto 15px; overflow: hidden;">
+                        <img src="https://ui-avatars.com/api/?name=Aryan+Kumar&background=random&size=100"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <h3>Aryan Kumar Ojha</h3>
+                    <p
+                        style="color: var(--primary-neon); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">
+                        Full Stack Developer</p>
+                    <p>Frontend UI, dashboard design and backend–frontend integration.</p>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="team-card tilt-card" data-tilt>
+                    <div
+                        style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary-neon); margin: 0 auto 15px; overflow: hidden;">
+                        <img src="https://ui-avatars.com/api/?name=Sarthak+Harischandra&background=random&size=100"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <h3>Sarthak Harischandra Pal</h3>
+                    <p
+                        style="color: var(--primary-neon); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">
+                        Frontend Developer</p>
+                    <p>UI layout, styling, responsiveness and user experience.</p>
+                </div>
+
+                <!-- Member 4 -->
+                <div class="team-card tilt-card" data-tilt>
+                    <div
+                        style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary-neon); margin: 0 auto 15px; overflow: hidden;">
+                        <img src="https://ui-avatars.com/api/?name=Poonam+Ganesh&background=random&size=100"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <h3>Poonam Ganesh Poul</h3>
+                    <p
+                        style="color: var(--primary-neon); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">
+                        Documentation & QA</p>
+                    <p>Project documentation, testing, and research support.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.9rem;">
+                © 2025 Byte Benders | All Rights Reserved
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <h2>About This Application</h2>
+            <div class="about-content">
+                <div class="feature-card">
+                    <h3>🎯 Real-Time Detection</h3>
+                    <p>Advanced face and human detection using OpenCV and machine learning algorithms.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ High Performance</h3>
+                    <p>Optimized for real-time processing with high FPS and low latency.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 Privacy First</h3>
+                    <p>All processing happens locally. No data is sent to external servers.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 Responsive Design</h3>
+                    <p>Works seamlessly on desktop, tablet, and mobile devices.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="feedback" class="section">
+            <h2>Send Feedback</h2>
+            <div class="auth-card" style="margin: 0 auto; transform: none; box-shadow: none; padding: 0;">
+                <p style="margin-bottom: 20px;">We value your feedback directly to our team.</p>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div
+                    style="padding: 10px; border-radius: 5px; background: rgba(16, 185, 129, 0.1); color: green; margin-bottom: 15px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+                <form action="{{ url_for('submit_feedback') }}" method="POST">
+                    <div class="form-group">
+                        <label>Your Message / Suggestion</label>
+                        <textarea name="message" class="form-control" rows="6" required
+                            placeholder="Type your feedback here..."></textarea>
+                    </div>
+                    <button type="submit" class="auth-btn" style="max-width: 200px;">Submit Feedback</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+    <script>
+        // Hamburger Menu Toggle
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navUl = document.getElementById('nav-ul');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        mobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            navUl.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                navUl.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

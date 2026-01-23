@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet Our Team - Tech Vision</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #020617;
+            --primary-teal: #0d2a30;
+            --tech-gradient: radial-gradient(circle at top right, #0d2a30, #020617);
+            --leader-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            --accent-neon: #00f3ff;
+            --accent-purple: #bc13fe;
+            --accent-green: #39ff14;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Tech Background */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(0, 243, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(188, 19, 254, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        .glow-spot {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--accent-neon);
+            filter: blur(150px);
+            opacity: 0.1;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: moveGlow 20s infinite alternate ease-in-out;
+            z-index: -1;
+        }
+
+        @keyframes moveGlow {
+            0% {
+                transform: translate(-50%, -50%);
+            }
+
+            100% {
+                transform: translate(50%, 50%);
+            }
+        }
+
+        .team-section {
+            width: 100%;
+            max-width: 1200px;
+            z-index: 1;
+        }
+
+        .main-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 4rem 3rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: var(--glass-bg);
+            color: var(--accent-neon);
+            text-decoration: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: 1px solid var(--glass-border);
+            z-index: 10;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-neon);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+            transform: translateX(-5px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #fff, var(--accent-neon));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.3));
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .leader-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 5rem;
+        }
+
+        .leader-card {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(188, 19, 254, 0.1));
+            width: 100%;
+            max-width: 800px;
+            padding: 3.5rem;
+            border-radius: 35px;
+            text-align: center;
+            position: relative;
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .leader-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--accent-neon) 0%, transparent 70%);
+            opacity: 0;
+            transition: 0.5s;
+        }
+
+        .leader-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--accent-neon);
+            box-shadow: 0 25px 50px -12px rgba(0, 243, 255, 0.2);
+        }
+
+        .leader-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .avatar-main {
+            width: 150px;
+            height: 150px;
+            background: #0f172a;
+            border: 3px solid var(--accent-neon);
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            padding: 5px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .avatar-main img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .leader-card h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #fff;
+            position: relative;
+            z-index: 2;
+        }
+
+        .leader-card .role {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-neon);
+            background: rgba(0, 243, 255, 0.1);
+            padding: 6px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .leader-card p {
+            line-height: 1.8;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            max-width: 85%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .member-card {
+            background: var(--glass-bg);
+            padding: 3rem 2rem;
+            border-radius: 30px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .member-card:hover {
+            transform: translateY(-15px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-purple);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(188, 19, 254, 0.1);
+        }
+
+        .avatar-mini {
+            width: 100px;
+            height: 100px;
+            background: #0f172a;
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--glass-border);
+            padding: 4px;
+            transition: 0.3s;
+        }
+
+        .avatar-mini img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-card:hover .avatar-mini {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+        }
+
+        .member-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .member-card .role {
+            color: var(--accent-neon);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.2rem;
+            display: block;
+        }
+
+        .member-card p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 5rem;
+            color: var(--text-dim);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        /* Tech Scan Animation on cards */
+        .member-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: skewX(-25deg);
+            transition: 0.5s;
+            pointer-events: none;
+        }
+
+        .member-card:hover::after {
+            left: 150%;
+            transition: 0.8s;
+        }
+
+        @media (max-width: 1024px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .main-card {
+                padding: 3rem 1.5rem;
+            }
+
+            .leader-card h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="glow-spot" style="top: 20%; left: 30%;"></div>
+    <div class="glow-spot" style="top: 70%; left: 80%; background: var(--accent-purple);"></div>
+
+    <section class="team-section">
+        <div class="main-card">
+            <a href="{{ url_for('index', section='dashboard') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> BACK
+            </a>
+
+            <header class="header">
+                <h1>Meet Our Team</h1>
+                <p>Smart Road Crossing – Project Contributors</p>
+            </header>
+
+
+            <!-- Team Members Grid -->
+            <div class="team-grid">
+                <!-- Member 1 -->
+                <div class="member-card">
+                    <div class="avatar-mini">
+                        <img src="https://ui-avatars.com/api/?name=Vitali+Devraj&background=random&size=150"
+                            alt="Vitali">
+                    </div>
+                    <h3>Vitali Devraj Sivanand</h3>
+                    <span class="role">Backend Developer</span>
+                    <p>Engineered the robust Flask architecture, seamless camera integration, and core detection control
+                        systems.</p>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="member-card">
+                    <div class="avatar-mini">
+                        <img src="https://ui-avatars.com/api/?name=Aryan+Kumar&background=random&size=150" alt="Aryan">
+                    </div>
+                    <h3>Aryan Kumar Ojha</h3>
+                    <span class="role">Full Stack Developer</span>
+                    <p>Crafted the dynamic dashboard UI, futuristic aesthetics, and bridged the gap between backend
+                        logic and interactive design.</p>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="member-card">
+                    <div class="avatar-mini">
+                        <img src="https://ui-avatars.com/api/?name=Sarthak+Harischandra&background=random&size=150"
+                            alt="Sarthak">
+                    </div>
+                    <h3>Sarthak Harischandra Pal</h3>
+                    <span class="role">UI Designer</span>
+                    <p>Focused on layout precision, responsive styling, and delivering an immersive user experience
+                        across all devices.</p>
+                </div>
+
+                <!-- Member 4 (Spacer for documentation if needed) -->
+                <div class="member-card">
+                    <div class="avatar-mini">
+                        <img src="https://ui-avatars.com/api/?name=Poonam+Ganesh&background=random&size=150"
+                            alt="Poonam">
+                    </div>
+                    <h3>Poonam Ganesh Poul</h3>
+                    <span class="role">Documentation & QA</span>
+                    <p>Expertly handled project documentation, rigorous testing protocols, and final research report
+                        generation.</p>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>&copy; 2025 Byte Benders | All Rights Reserved</p>
+            </footer>
+        </div>
+    </section>
+
+</body>
+
+</html>
