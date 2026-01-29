@@ -1,7 +1,7 @@
 import os
 
-# Configure YOLO/Ultralytics to use /tmp for its config/logs (Vercel fix)
-if os.environ.get('VERCEL'):
+# Configure YOLO/Ultralytics to use /tmp for its config/logs (Cloud/Render fix)
+if os.environ.get('RENDER') or os.environ.get('VERCEL'):
     os.environ['ULTRALYTICS_CONFIG_DIR'] = '/tmp/.ultralytics'
     os.environ['ULTRALYTICS_RUNS_DIR'] = '/tmp/.ultralytics/runs'
     os.environ['YOLO_VERBOSE'] = 'False'
@@ -19,14 +19,18 @@ from authlib.integrations.flask_client import OAuth
 from datetime import datetime
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
+# Apply ProxyFix for Render/Load Balancers
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this')
 app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT', 'my_precious_two')
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
-# Use /tmp for SQLite on Vercel/Render (read-only or ephemeral filesystems)
-if os.environ.get('VERCEL') or os.environ.get('RENDER'):
+# Use /tmp for SQLite on Render (ephemeral filesystem)
+if os.environ.get('RENDER'):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/database.db'
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -262,6 +266,11 @@ def dashboard():
 @app.route("/about")
 def about():
     return render_template("index.html", section="about")
+
+@app.route("/health")
+def health():
+    """Health check for Render deployment"""
+    return jsonify({"status": "healthy", "timestamp": datetime.utcnow().isoformat()})
 
 # ========================= AUTH ROUTES ========================= #
 
