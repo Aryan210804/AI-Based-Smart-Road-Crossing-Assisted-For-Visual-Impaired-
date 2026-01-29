@@ -25,8 +25,8 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-
 app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT', 'my_precious_two')
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
-# Use /tmp for SQLite on Vercel (read-only filesystem)
-if os.environ.get('VERCEL'):
+# Use /tmp for SQLite on Vercel/Render (read-only or ephemeral filesystems)
+if os.environ.get('VERCEL') or os.environ.get('RENDER'):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/database.db'
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -37,9 +37,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'aryankumar735588@gmail.com'  # Your email
-app.config['MAIL_PASSWORD'] = 'your-app-password-here'      # REPLACE THIS WITH YOUR APP PASSWORD
-app.config['MAIL_DEFAULT_SENDER'] = 'aryankumar735588@gmail.com'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'aryankumar735588@gmail.com')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  # No default for security
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
 
 mail = Mail(app)
 db = SQLAlchemy(app)
@@ -135,6 +135,7 @@ sample_mode = isinstance(src_env, str) and src_env.strip().lower() == 'sample'
 if sample_mode:
     print("Using synthetic sample video stream (no camera required)")
 else:
+    print("Using real camera")
     print(f"Using video source: {src_env}")
 detecting = True
 
@@ -182,9 +183,13 @@ def get_camera():
 
             print("Opening camera source:", src_val)
             # Try opening with different backends for better compatibility
-            camera = cv2.VideoCapture(src_val, cv2.CAP_DSHOW)  # Use DirectShow on Windows
+            if os.name == 'nt': # Windows
+                camera = cv2.VideoCapture(src_val, cv2.CAP_DSHOW)
+            else:
+                camera = cv2.VideoCapture(src_val)
+            
             if not camera.isOpened():
-                camera = cv2.VideoCapture(src_val)  # Fallback to default
+                camera = cv2.VideoCapture(src_val)  # Fallback
             
             time.sleep(0.5)
 
@@ -757,5 +762,8 @@ def script():
 app = app
 
 if __name__ == "__main__":
+    is_cloud = os.environ.get('VERCEL') or os.environ.get('RENDER')
     port = int(os.environ.get('PORT', 5001))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # In cloud, we should not use debug mode as it can cause issues with streaming
+    debug_mode = False if is_cloud else True
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

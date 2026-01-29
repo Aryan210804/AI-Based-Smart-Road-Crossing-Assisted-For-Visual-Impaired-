@@ -19,3 +19,9 @@ Thumbs.db
 .vscode/
 terminals/
 *.log
+database.db
+*.sqlite
+instance/
+.ultralytics/
+runs/
+.env
